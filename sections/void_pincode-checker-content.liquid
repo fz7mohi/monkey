@@ -1,0 +1,365 @@
+<div class="pincode-checker-section">
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pincode Checker</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+  .pincode-checker-section :is(*, *::before, *::after) {
+    box-sizing: border-box;
+  }
+
+  .pincode-checker-section :is(body, body *) {
+    font-family: inherit;
+    line-height: inherit;
+  }
+    .animation-container {
+      position: relative;
+      height: 100px;
+    }
+
+    .animation-container:before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: black;
+      z-index: 0;
+    }
+
+    .office-icon,
+    .biker-icon,
+    .house-icon {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      z-index: 1;
+      bottom: 1px;
+    }
+
+    .office-icon {
+      left: 0;
+    }
+
+    .house-icon {
+      right: 0;
+    }
+
+    .biker-icon {
+      left: 60px;
+      transition: left 2s ease-in-out;
+    }
+
+    .biker-icon.move {
+      left: calc(100% - 110px);
+      animation: reach-house 2s ease-in-out forwards;
+    }
+
+    @keyframes reach-house {
+      0% {
+        left: 60px;
+      }
+      100% {
+        left: calc(100% - 110px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="card-title mb-4">Check Estimated Delivery Date</h3>
+            <div class="form-group">
+              <div class="input-group mb-3">
+                <input type="text" id="pincode" class="form-control" placeholder="Enter your pincode" maxlength="6" pattern="\d{6}">
+                <div class="input-group-append">
+                  <span id="locationIcon" class="input-group-text bg-transparent border-0" style="cursor: pointer;"><i class="bi bi-geo-alt"></i></span>
+                </div>
+              </div>
+            </div>
+            <button id="checkBtn" class="btn btn-primary">
+              <span class="btn-text">Check</span>
+              <div class="spinner-border spinner-border-sm d-none" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </button>
+            <div id="result" class="mt-4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-8">
+        <div class="animation-container d-flex align-items-center justify-content-between">
+          <img src="https://cdn.shopify.com/s/files/1/0772/0665/1159/files/officeicon.png" alt="Office" class="office-icon">
+          <img src="https://cdn.shopify.com/s/files/1/0772/0665/1159/files/biker1.png" alt="Biker" class="biker-icon">
+          <img src="https://cdn.shopify.com/s/files/1/0772/0665/1159/files/hoseicon.png" alt="House" class="house-icon">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const pincodeInput = document.getElementById('pincode');
+    const checkBtn = document.getElementById('checkBtn');
+    const resultDiv = document.getElementById('result');
+    const btnText = checkBtn.querySelector('.btn-text');
+    const spinner = checkBtn.querySelector('.spinner-border');
+    let countdownInterval;
+
+    // Countdown timer function
+    function startCountdown(estimatedDeliveryDate) {
+      clearInterval(countdownInterval); // Clear any existing interval
+      let totalSeconds = 15 * 60; // 15 minutes
+      countdownInterval = setInterval(() => {
+        const minutes = Math.floor(totalSeconds / 60);
+        let seconds = totalSeconds % 60;
+
+        if (seconds < 10) {
+          seconds = '0' + seconds;
+        }
+
+        const countdownMessage = `
+          <span>Order within <span class="countdown-timer">${minutes}:${seconds}</span> to get the delivery by</span>
+          <div class="delivery-date">${estimatedDeliveryDate}</div>
+        `;
+        resultDiv.innerHTML = countdownMessage;
+
+        if (totalSeconds <= 0) {
+          clearInterval(countdownInterval);
+          resultDiv.textContent = 'Time\'s up!'; // Message when countdown ends
+        } else {
+          totalSeconds--;
+        }
+      }, 1000);
+    }
+
+    const locationIcon = document.getElementById('locationIcon');
+
+    // Function to fetch the user's geolocation and prefill the pincode
+    function getGeolocation() {
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            // Use the Mapbox Geocoding API to get the pincode based on the latitude and longitude
+            const apiUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${accessToken}&types=postcode&limit=1`;
+
+            fetch(apiUrl)
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Reverse geocoding request failed.');
+                }
+                return response.json();
+              })
+              .then(data => {
+                if (data.features.length > 0) {
+                  const pincode = data.features[0].text;
+                  pincodeInput.value = pincode;
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+              });
+          },
+          function(error) {
+            console.error('Error:', error);
+            // Handle cases where the user denies location access
+            if (error.code === 1) {
+              console.log('User denied access to location.');
+              // You can display a message to the user or take appropriate action
+            }
+          }
+        );
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+      }
+    }
+
+    // Call the getGeolocation function when the page loads
+    window.addEventListener('load', getGeolocation);
+
+    // Add an event listener to the location icon
+    locationIcon.addEventListener('click', getGeolocation);
+
+    const storeLatitude = 19.0730635;
+    const storeLongitude = 73.1000696;
+
+    // Your Mapbox access token
+    const accessToken = 'pk.eyJ1IjoidGhlbGFzdG1vbms0NyIsImEiOiJjbHUwamYxMG0wOXZiMnJuMGp5ems4dWI4In0.7nBb33Md7L1073gxVpPvwA';
+
+    checkBtn.addEventListener('click', function() {
+      const pincode = pincodeInput.value;
+      if (/^\d{6}$/.test(pincode)) {
+        // Perform pincode validation logic here
+        const isValid = validatePincode(pincode);
+        if (isValid) {
+          // Show the loading spinner
+          btnText.classList.add('d-none');
+          spinner.classList.remove('d-none');
+
+          // Get the latitude and longitude based on the pincode using the Mapbox Geocoding API
+          const apiUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${pincode}.json?access_token=${accessToken}&types=postcode&limit=1`;
+
+          fetch(apiUrl)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Postal code to coordinates request failed.');
+              }
+              return response.json();
+            })
+            .then(data => {
+              console.log('API response:', data);
+              if (data.features.length > 0) {
+                const latitude = data.features[0].center[1];
+                const longitude = data.features[0].center[0];
+                console.log('Pincode:', pincode);
+                console.log('Latitude:', latitude);
+                console.log('Longitude:', longitude);
+                const distance = calculateDistance(latitude, longitude, storeLatitude, storeLongitude);
+                console.log('Calculated distance:', distance);
+                const estimatedDeliveryDate = getEstimatedDeliveryDate(distance);
+                resultDiv.classList.remove('text-danger', 'text-success');
+                resultDiv.style.opacity = 0;
+
+                // Reset biker position
+                const bikerIcon = document.querySelector('.biker-icon');
+                bikerIcon.classList.remove('move');
+                void bikerIcon.offsetWidth; // Trigger reflow to restart the animation
+
+                // Start the animation
+                bikerIcon.classList.add('move');
+
+                bikerIcon.addEventListener('animationend', function() {
+                  resultDiv.classList.add('text-success');
+                  resultDiv.innerHTML = `
+                    <span>Order within <span class="countdown-timer"></span> to get the delivery by</span>
+                    <div class="delivery-date">${estimatedDeliveryDate}</div>
+                  `;
+                  setTimeout(function() {
+                    resultDiv.style.opacity = 1;
+                    startCountdown(estimatedDeliveryDate); // Start the countdown timer
+                    // Hide the loading spinner
+                    btnText.classList.remove('d-none');
+                    spinner.classList.add('d-none');
+                  }, 100);
+                }, { once: true });
+              } else {
+                resultDiv.innerHTML = 'Could not find coordinates for the entered pincode. Please check the pincode and try again.';
+                resultDiv.classList.remove('text-success');
+                resultDiv.classList.add('text-danger');
+                clearInterval(countdownInterval); // Clear the countdown interval
+                // Hide the loading spinner
+                btnText.classList.remove('d-none');
+                spinner.classList.add('d-none');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              resultDiv.innerHTML = 'An error occurred while calculating the distance. Please check the entered pincode and try again.';
+              resultDiv.classList.remove('text-success');
+              resultDiv.classList.add('text-danger');
+              clearInterval(countdownInterval); // Clear the countdown interval
+              // Hide the loading spinner
+              btnText.classList.remove('d-none');
+              spinner.classList.add('d-none');
+            });
+        } else {
+          resultDiv.innerHTML = 'Invalid pincode. Please enter a valid Indian pincode.';
+          resultDiv.classList.remove('text-success');
+          resultDiv.classList.add('text-danger');
+          clearInterval(countdownInterval); // Clear the countdown interval
+        }
+      } else {
+        resultDiv.innerHTML = 'Please enter a valid 6-digit pincode.';
+        resultDiv.classList.remove('text-success');
+        resultDiv.classList.add('text-danger');
+        clearInterval(countdownInterval); // Clear the countdown interval
+      }
+    });
+
+    function validatePincode(pincode) {
+      // Perform pincode validation logic here
+      // Return true if the pincode is valid for India, false otherwise
+      // You can use an API or a predefined list of valid pincodes
+      // For demonstration purposes, let's assume all pincodes are valid
+      return true;
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const earthRadius = 6371; // Radius of the Earth in kilometers
+      const dLat = deg2rad(lat2 - lat1);
+      const dLon = deg2rad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = earthRadius * c;
+      return distance;
+    }
+
+    function deg2rad(deg) {
+      return deg * (Math.PI / 180);
+    }
+
+    function getEstimatedDeliveryDate(distance) {
+      const currentDate = new Date();
+      const dispatchDate = new Date(currentDate);
+
+      // Adjust dispatch date if it falls on a Sunday
+      if (dispatchDate.getDay() === 0) {
+        dispatchDate.setDate(dispatchDate.getDate() + 1);
+      }
+
+      // Calculate estimated delivery date based on distance
+      const deliveryDate = new Date(dispatchDate);
+      if (distance <= 50) {
+        deliveryDate.setDate(deliveryDate.getDate() + 3);
+      } else if (distance <= 100) {
+        deliveryDate.setDate(deliveryDate.getDate() + 4);
+      } else {
+        deliveryDate.setDate(deliveryDate.getDate() + 7);
+      }
+
+      // Format the delivery date with ordinal suffix
+      const options = { weekday: 'long' };
+      const dayOfWeek = deliveryDate.toLocaleDateString('en-US', options);
+      const dayOfMonth = deliveryDate.getDate();
+      const ordinalSuffix = getOrdinalSuffix(dayOfMonth);
+      const month = deliveryDate.toLocaleString('default', { month: 'long' });
+      const formattedDate = `${dayOfWeek}, ${dayOfMonth}${ordinalSuffix} ${month}`;
+
+      return formattedDate;
+    }
+
+    function getOrdinalSuffix(dayOfMonth) {
+      if (dayOfMonth >= 11 && dayOfMonth <= 13) {
+        return 'th';
+      }
+      switch (dayOfMonth % 10) {
+        case 1:
+          return 'st';
+        case 2:
+          return 'nd';
+        case 3:
+          return 'rd';
+        default:
+          return 'th';
+      }
+    }
+  </script>
+</body>
+</html>
+</div>

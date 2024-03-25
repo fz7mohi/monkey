@@ -1,0 +1,115 @@
+/* This will hide the mobile sticky cart on screens wider than 767px */
+@media screen and (min-width: 768px) {
+    .sticky-mobile {
+        display: none !important;
+    }
+}
+
+/* This will hide the desktop sticky cart on screens narrower than 768px */
+@media screen and (max-width: 767px) {
+    .sticky-desktop {
+        display: none !important;
+    }
+}
+
+/* Rest of the styles... */
+.loader {
+    border: 5px solid #f3f3f3; /* Light grey */
+    border-top: 5px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+.productView-stickyCart {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.productView-stickyCart.show-sticky {
+    transform: translateY(0);
+}
+
+.productView-stickyCart .sticky-product-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.productView-stickyCart .sticky-product {
+    display: flex;
+    align-items: center;
+}
+
+.productView-stickyCart .sticky-left {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.productView-stickyCart .sticky-image {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+}
+
+.productView-stickyCart .sticky-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.productView-stickyCart .sticky-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.productView-stickyCart .sticky-right {
+    display: flex;
+    align-items: center;
+}
+
+.productView-stickyCart .sticky-actions-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.productView-stickyCart .sticky-price {
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 20px;
+    white-space: nowrap;
+}
+
+.productView-stickyCart .product-form__submit {
+    background-color: {{ settings.color_primary }}; /* Use your store's primary color */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    cursor: pointer;
+}

@@ -1,0 +1,165 @@
+<style>
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 20px;
+    padding: 20px;
+  }
+
+  .image-card {
+    position: relative;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .image-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .image-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .image-card a {
+    text-decoration: none;
+  }
+
+  @media (max-width: 1024px) {
+    .image-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .image-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .image-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+   .search-bar {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .search-bar input {
+    width: 300px;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px;
+    background-color: #f2f2f2;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .search-bar input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(18, 77, 76, 0.8);
+  }
+</style>
+<div class="breadcrumbs">
+  <a href="#" class="breadcrumb-link" onclick="goBack()">
+    <i class="fas fa-arrow-left" style="color: #134d4c;"></i>
+  </a>
+  <span class="breadcrumb-page"></span>
+</div>
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .breadcrumb-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s;
+    padding: 5px 10px;
+  }
+
+  .breadcrumb-link:hover {
+    color: #0056b3;
+  }
+
+  .breadcrumb-page {
+    font-size: 18px;
+    font-weight: 500;
+    margin-left: 10px;
+    color: #333;
+    padding: 5px 10px;
+  }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+<script>
+  function goBack() {
+    window.history.back();
+  }
+</script>
+
+<div style="padding: 50px;">
+  <div style="text-align: center;">
+    <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Know About Stones</h1>
+    <p style="font-size: 18px; line-height: 1.5; max-width: 800px; margin: 0 auto;">
+      Welcome to our stone gallery, where the beauty and wonder of various stones await your exploration. Click on each image to delve deeper into the unique qualities and characteristics of every stone. Begin your journey of discovery today!
+    </p>
+  </div>
+</div>
+
+<div class="search-bar">
+  <input type="text" id="searchInput" placeholder="Search stones..." oninput="filterStones()">
+</div>
+
+
+
+{% assign image_urls = "https://cdn.shopify.com/s/files/1/0772/0665/1159/files/AMAZONITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/AMETHYSTT.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/ANGELITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/AQUAMARINEE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/AURAQUARTZ.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/BLACKNETJASPER.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/BLACKOBSIDIAN.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/BLACKRUTILE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/BLACKTOURMALINE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/BLOODSTONE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/BLUEAPPETITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/BLUEAVENTURINE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/CATSEYE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/CHRYSOCOLA.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/CITRINEE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/CLEARQUARTZ.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/CORALJADEFOSSIL.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/DALMATIONJASPER.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/DESERT-ROSE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/DREAMAMETHYST.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/ELEPHANTSKINJASPER.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/FEATHEREDTOURMALINE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/FLOURITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/GABBROMARNELIAN.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/GARNET.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/GOLDENRUTILEQUARTZ.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/GREENAVENTURINE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/GREENJADE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/GREYAGATE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/HEMATITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/HONEYCALCITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/HOWLITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/INDIANAGATE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/K2.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/KAMBAMBAJASPER.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/LABRADORITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/LAPISLAZULI.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/LARVIKITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/LAVA.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/LEPIDOLITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/MALACHITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/MOOKALITEJASPER.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/MOONSTONE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/MORGANITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/MOSSAGATE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/OCEANJASPER.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/OPAL.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/PICASSOJASPER.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/PICTUREJASPER.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/PIETERSITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/PINKAVENTURINE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/PINKTIGERSEYE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/PREHNITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/PYRITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/QUESERA.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/RAINFORESTJASPER.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/REDCARNELIAN.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/REDFIREQUARTZHEMATOID.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/REDJASPER.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/ROSEQUARTZ.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/RUBYZIOSITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/RUDRAKSHA.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/SELENITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/SERPENTINE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/SHUNGITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/SMOKYQUARTZ.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/SNOWFLAKEOBSIDIAN.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/SODALITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/SOLECITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/STRAWBERRYQUARTZ.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/SULEIMANIHAKKIKI.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/SUNSTONE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/TIGERSEYE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/TURQIOUS.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/UNAKITE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/WHEATHEREDAGATE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/YELLOW-AVENTURINE.jpg,https://cdn.shopify.com/s/files/1/0772/0665/1159/files/ZEBRAJASPER.jpg" | split: ',' %}
+
+{% assign page_urls = "https://thelastmonk.com/pages/Amazonite,https://thelastmonk.com/pages/Amethyst,https://thelastmonk.com/pages/Angelite,https://thelastmonk.com/pages/Aquamarine,https://thelastmonk.com/pages/Aura-Quartz,https://thelastmonk.com/pages/Black-Net-Jasper,https://thelastmonk.com/pages/Black-Obsidian,https://thelastmonk.com/pages/Black-Rutile,https://thelastmonk.com/pages/Black-Tourmaline,https://thelastmonk.com/pages/Bloodstone,https://thelastmonk.com/pages/Blue-Appetite,https://thelastmonk.com/pages/Blue-Aventurine,https://thelastmonk.com/pages/Cats-Eye,https://thelastmonk.com/pages/Chrysocolla,https://thelastmonk.com/pages/Citrine,https://thelastmonk.com/pages/Clear-Quartz,https://thelastmonk.com/pages/Coral-Jade-Fossil,https://thelastmonk.com/pages/Dalmatian-Jasper,https://thelastmonk.com/pages/Desert-Rose,https://thelastmonk.com/pages/Dream-Amethyst,https://thelastmonk.com/pages/Elephant-Skin-Jasper,https://thelastmonk.com/pages/Feathered-Tourmaline,https://thelastmonk.com/pages/Fluorite,https://thelastmonk.com/pages/Gabbro-Carnelian,https://thelastmonk.com/pages/Garnet,https://thelastmonk.com/pages/Golden-Rutile-Quartz,https://thelastmonk.com/pages/Green-Aventurine,https://thelastmonk.com/pages/Green-Jade,https://thelastmonk.com/pages/Grey-Agate,https://thelastmonk.com/pages/Hematite,https://thelastmonk.com/pages/Honey-Calcite,https://thelastmonk.com/pages/Howlite,https://thelastmonk.com/pages/Indian-Agate,https://thelastmonk.com/pages/K2,https://thelastmonk.com/pages/Kambamba-Jasper,https://thelastmonk.com/pages/Labradorite,https://thelastmonk.com/pages/Lapis-Lazuli,https://thelastmonk.com/pages/Larvikite,https://thelastmonk.com/pages/Lava,https://thelastmonk.com/pages/Lepidolite,https://thelastmonk.com/pages/Malachite,https://thelastmonk.com/pages/Mookaite-Jasper,https://thelastmonk.com/pages/Moonstone,https://thelastmonk.com/pages/Morganite,https://thelastmonk.com/pages/Moss-Agate,https://thelastmonk.com/pages/Ocean-Jasper,https://thelastmonk.com/pages/Opal,https://thelastmonk.com/pages/Picasso-Jasper,https://thelastmonk.com/pages/Picture-Jasper,https://thelastmonk.com/pages/Pietersite,https://thelastmonk.com/pages/Pink-Aventurine,https://thelastmonk.com/pages/Pink-Tigers-Eye,https://thelastmonk.com/pages/Prehnite,https://thelastmonk.com/pages/Pyrite,https://thelastmonk.com/pages/Quesera,https://thelastmonk.com/pages/Rainforest-Jasper,https://thelastmonk.com/pages/Red-Carnelian,https://thelastmonk.com/pages/Red-Fire-Quartz-Hematoid,https://thelastmonk.com/pages/Red-Jasper,https://thelastmonk.com/pages/Rose-Quartz,https://thelastmonk.com/pages/Ruby-Ziosite,https://thelastmonk.com/pages/Rudraksha,https://thelastmonk.com/pages/Selenite,https://thelastmonk.com/pages/Serpentine,https://thelastmonk.com/pages/Shungite,https://thelastmonk.com/pages/Smoky-Quartz,https://thelastmonk.com/pages/Snowflake-Obsidian,https://thelastmonk.com/pages/Sodalite,https://thelastmonk.com/pages/Solesite,https://thelastmonk.com/pages/Strawberry-Quartz,https://thelastmonk.com/pages/Suleimani-Hakkiki,https://thelastmonk.com/pages/Sunstone,https://thelastmonk.com/pages/Tigers-Eye,https://thelastmonk.com/pages/Turquoise,https://thelastmonk.com/pages/Unakite,https://thelastmonk.com/pages/Weathered-Agate,https://thelastmonk.com/pages/Yellow-Aventurine,https://thelastmonk.com/pages/Zebra-Jasper" | split: ',' %}
+
+
+<div class="image-grid">
+  {% assign sorted_images = image_urls | sort %}
+  {% for image_url in sorted_images %}
+    {% assign image_name = image_url | split: '/' | last | split: '.' | first | downcase %}
+    {% assign page_url = page_urls[forloop.index0] %}
+    <div class="image-card" data-name="{{ image_name }}">
+      <a href="{{ page_url }}">
+        <img src="{{ image_url }}" alt="{{ image_name | capitalize }}" loading="lazy">
+      </a>
+    </div>
+  {% endfor %}
+</div>
+
+
+<script>
+  function filterStones() {
+    var input = document.getElementById('searchInput');
+    var filter = input.value.toLowerCase();
+    var imageCards = document.getElementsByClassName('image-card');
+
+    for (var i = 0; i < imageCards.length; i++) {
+      var imageName = imageCards[i].getAttribute('data-name');
+      if (imageName.includes(filter)) {
+        imageCards[i].style.display = 'block';
+      } else {
+        imageCards[i].style.display = 'none';
+      }
+    }
+  }
+</script>

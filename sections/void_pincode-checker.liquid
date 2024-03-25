@@ -1,0 +1,37 @@
+
+{% schema %}
+{
+  "name": "Pincode Checker",
+  "class": "pincode-checker-section",
+  "presets": [
+    {
+      "name": "Default",
+      "settings": {
+        "store_latitude": "19.0730635",
+        "store_longitude": "73.1000696",
+        "mapbox_token": "pk.eyJ1IjoidGhlbGFzdG1vbms0NyIsImEiOiJjbHUwamYxMG0wOXZiMnJuMGp5ems4dWI4In0.7nBb33Md7L1073gxVpPvwA"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "store_latitude",
+      "label": "Store Latitude",
+      "default": "19.0730635"
+    },
+    {
+      "type": "text",
+      "id": "store_longitude",
+      "label": "Store Longitude",
+      "default": "73.1000696"
+    },
+    {
+      "type": "text",
+      "id": "mapbox_token",
+      "label": "Mapbox Access Token",
+      "default": "pk.eyJ1IjoidGhlbGFzdG1vbms0NyIsImEiOiJjbHUwamYxMG0wOXZiMnJuMGp5ems4dWI4In0.7nBb33Md7L1073gxVpPvwA"
+    }
+  ]
+}
+{% endschema %}

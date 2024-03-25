@@ -1,0 +1,185 @@
+class StickyAddToCart extends HTMLElement {
+    constructor() {
+        super();
+        this.sticky = this;
+        this.stickyBounds = document.getElementById('product-add-to-cart') || document.querySelector('[data-combo-addtocart]');
+    }
+
+    connectedCallback() {
+        this.onScrollHandler = this.onScroll.bind(this);
+        window.addEventListener('scroll', this.onScrollHandler, false);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('scroll', this.onScrollHandler);
+    }
+
+    onScroll() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const offsetScroll = $(this.stickyBounds).offset().top + $(this.stickyBounds).outerHeight(true) + 100;
+        const winHeight = window.innerHeight;
+        const docHeight = document.body.clientHeight;
+
+        if (scrollTop > offsetScroll && scrollTop + winHeight < docHeight) {
+            requestAnimationFrame(this.show.bind(this));
+        } else {
+            requestAnimationFrame(this.hide.bind(this));
+        }
+
+        this.currentScrollTop = scrollTop;
+    }
+
+    hide() {
+        this.sticky.classList.remove('show-sticky', 'animate');
+        hideLoader(); // Hide loader when hiding sticky add-to-cart
+    }
+
+    show() {
+        this.sticky.classList.add('show-sticky', 'animate');
+        showLoader(); // Show loader when showing sticky add-to-cart
+    }
+}
+
+customElements.define('sticky-add-to-cart', StickyAddToCart);
+
+class VariantStickyAddToCart extends HTMLElement {
+    constructor() {
+        super();
+        this.item = $(this).closest('.productView');
+        this.sticky = $(this).closest('.productView-stickyCart');
+        this.addEventListener('change', this.onVariantChange.bind(this));
+    }
+
+    onVariantChange(event) {
+        this.updateOptions();   
+        this.updateMasterId();
+        this.updatePickupAvailability();
+        this.updateURL();
+        this.updateVariantInput();
+        this.renderProductAjaxInfo();
+        this.updateAttribute(!this.currentVariant.available);
+    }
+
+    updateOptions() {
+        this.options = Array.from(this.querySelectorAll('select'), (select) => select.value);
+    }
+
+    updateMasterId() {
+        this.currentVariant = this.getVariantData().find((variant) => {
+            return variant.id == this.options;
+        });
+    }
+
+    updateURL() {
+        if (!this.currentVariant) return;
+        window.history.replaceState({ }, '', `${this.dataset.url}?variant=${this.currentVariant.id}`);
+    }
+
+    updateVariantInput() {
+        const productForms = document.querySelectorAll(`#product-form-${this.dataset.product}, #product-form-installment-${this.dataset.product}, #product-form-sticky-${this.dataset.product}`);
+  
+        productForms.forEach((productForm) => {
+            const input = productForm.querySelector('input[name="id"]');
+            input.value = this.currentVariant.id;
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+    }
+
+    updatePickupAvailability() {
+        const pickUpAvailability = document.querySelector('pickup-availability');
+        if (!pickUpAvailability) return;
+
+        if (this.currentVariant?.available) {
+            pickUpAvailability.fetchAvailability(this.currentVariant.id);
+        } else {
+            pickUpAvailability.removeAttribute('available');
+            pickUpAvailability.innerHTML = '';
+        }
+    }
+
+    renderProductAjaxInfo() {
+        fetch(`${this.dataset.url}?variant=${this.currentVariant.id}&section_id=${this.dataset.section}`)
+            .then((response) => response.text())
+            .then((responseText) => {
+                const id = `product-price-${this.dataset.product}`;
+                const html = new DOMParser().parseFromString(responseText, 'text/html')
+                const destination = document.getElementById(id);
+                const source = html.getElementById(id);
+
+                if (source && destination) {
+                    destination.innerHTML = source.innerHTML;
+                }
+
+                document.getElementById(`product-price-${this.dataset.product}`)?.classList.remove('visibility-hidden');
+        });
+    }
+
+    updateAttribute(disable = true) {
+        const addButton = document.getElementById(`product-form-${this.dataset.product}`)?.querySelector('[name="add"]');
+        const stickyButton = document.getElementById(`product-form-sticky-${this.dataset.product}`)?.querySelector('[name="add"]');
+
+        var quantityInput = $('[data-sticky-add-to-cart] .quantity__input'),
+            notifyMe = this.item.find('.productView-notifyMe');
+
+        if (disable) {
+            var text = window.variantStrings.soldOut;
+
+            this.item.removeClass('isChecked');
+            quantityInput.attr('data-price', this.currentVariant?.price);
+            quantityInput.attr('disabled', true);
+            addButton.setAttribute('disabled', true);
+            addButton.textContent = text;
+            stickyButton.setAttribute('disabled', true);
+            stickyButton.textContent = text;
+
+            if (notifyMe.length > 0) {
+                notifyMe.find('.halo-notify-product-variant').val(this.currentVariant.title);
+                notifyMe.find('.notifyMe-text').empty();
+                notifyMe.slideDown('slow');
+            }
+        } else {
+            var text,
+                price = this.currentVariant?.price;
+
+            text = window.variantStrings.addToCart;
+
+            this.item.addClass('isChecked');
+            quantityInput.attr('data-price', this.currentVariant?.price);
+            quantityInput.attr('disabled', false);
+            addButton.removeAttribute('disabled');
+            addButton.textContent = text;
+            stickyButton.removeAttribute('disabled');
+            stickyButton.textContent = text;
+
+            if (notifyMe.length > 0) {
+                notifyMe.slideUp('slow');
+            }
+        }
+    }
+
+    getVariantData() {
+        this.variantData = this.variantData || JSON.parse(this.querySelector('[type="application/json"]').textContent);
+        return this.variantData;
+    }
+}
+
+customElements.define('variant-sticky-selects', VariantStickyAddToCart);
+      // Define the loader functions
+function showLoader() {
+    let loader = document.querySelector('.loader');
+    if (!loader) {
+        loader = document.createElement('div');
+        loader.className = 'loader';
+        document.body.appendChild(loader);
+    }
+}
+
+function hideLoader() {
+    const loader = document.querySelector('.loader');
+    if (loader) {
+        document.body.removeChild(loader);
+    }
+}
+
+// Ensure you call showLoader() when starting an operation that requires loading
+// and call hideLoader() when the operation is complete.

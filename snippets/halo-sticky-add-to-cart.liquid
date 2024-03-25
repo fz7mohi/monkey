@@ -1,0 +1,69 @@
+<sticky-add-to-cart class="productView-stickyCart style-{{ sticky_atc_layout }}" data-sticky-add-to-cart>
+    <!-- Desktop view -->
+    <div class="sticky-desktop">
+        <div class="{% if container == '1170' %}container-1170{% elsif container == '1770' %}container-1770{% elsif container == 'fullwidth'%}container-full{% else %}container{% endif %}">
+            <div class="sticky-product-wrapper">
+                <div class="sticky-product clearfix">
+                    {%- liquid 
+                        if current_variant.image
+                            assign image = current_variant.image
+                        else
+                            assign image = product.featured_image.src
+                        endif
+                    -%}
+                    <div class="sticky-left">
+                        <div class="sticky-image" data-image-sticky-add-to-cart>
+                            <img srcset="{{ image | img_url: '200x' }}" src="{{ image | img_url: '200x' }}" alt="{{ image.alt | default: shop.name | escape }}" sizes="200px" loading="lazy">
+                        </div>
+                        <div class="sticky-info">
+                            <h4 class="sticky-title">
+                                {{ product.title | escape | truncate: 40 }}
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="sticky-right sticky-actions">
+                        <form method="post" action="/cart/add" id="product_form_{{ product.id }}" accept-charset="UTF-8" class="form" enctype="multipart/form-data" novalidate="novalidate" data-type="add-to-cart-form">
+                            <input type="hidden" name="id" value="{{ current_variant.id }}">
+                            <div class="sticky-actions-wrapper">
+                                <div class="sticky-price">
+                                    {% assign subtotal = current_variant.price | money %}
+                                    <span class="money-subtotal">{{ subtotal }}</span>
+                                </div>
+                                <button
+                                    type="submit"
+                                    name="add"
+                                    data-btn-addToCart
+                                    class="product-form__submit button button--primary"
+                                    id="product-sticky-add-to-cart">
+                                    <span class="sticky-cart-text">Add to Cart</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile view -->
+    <div class="sticky-mobile">
+        <div class="sticky-product-mobile">
+            <form method="post" action="/cart/add" id="product_form_{{ product.id }}_mobile" accept-charset="UTF-8" class="form" enctype="multipart/form-data" novalidate="novalidate" data-type="add-to-cart-form">
+                <input type="hidden" name="id" value="{{ current_variant.id }}">
+                <button
+                    type="submit"
+                    name="add"
+                    data-btn-addToCart
+                    class="product-form__submit button button--primary"
+                    id="product-sticky-add-to-cart-mobile">
+                    <span class="sticky-cart-icon">{% render 'icon-cart' %}</span>
+                    <span class="sticky-price">
+                        {% assign subtotal = current_variant.price | money %}
+                        <span class="money-subtotal">{{ subtotal }}</span>
+                    </span>
+                    <span class="sticky-cart-text">Add to Cart</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</sticky-add-to-cart>
